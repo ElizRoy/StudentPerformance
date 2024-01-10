@@ -1,18 +1,20 @@
 ---
 title: "StudentPerformance_part01"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
 date: "2024-01-09"
 ---
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
 ```{r erasing, echo =FALSE}
 rm(list=ls())
 ```
+
 ## R Markdown
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
@@ -43,6 +45,8 @@ shh(library(data.table))
 
 shh(library(dplyr))
 
+shh(library(broom))
+
 library("readxl")
 #raw_uni<-read_excel("/Users/rerk/Desktop/Data #Analytics/Capstone/Coding/allcapstone.xlsx")
 raw_uni<-read_excel("/Users/rerk/StudentPerformance/studentdata.xlsx")
@@ -52,6 +56,7 @@ names(raw_uni)<-names(raw_uni) %>%
 str(raw_uni)
 raw_uni
 ```
+
 ##Distribution of dataset
 
 ```{r distribution raw_uni}
@@ -99,19 +104,9 @@ summary(raw_uni$cgpa)
 
 ```
 
-
-
-
-
-
 ## Feature Engineering
 
-Removing columns that arent pertinant.
-1. Column #1 will be removed as it numbers the rows and doesnt add value to data eploration.
-2. SAT score columns will be removed as there many empty rows (columns 13:16)
-3. Description column will be removed (Column 18)
-------4. English, math and Physics columns will be removed (Columns 20, 22, 24)
-5. Current Program, Total English  and Transcript columns will also be removed (Columns 9,10,17)
+Removing columns that arent pertinant. 1. Column #1 will be removed as it numbers the rows and doesnt add value to data eploration. 2. SAT score columns will be removed as there many empty rows (columns 13:16) 3. Description column will be removed (Column 18) ------4. English, math and Physics columns will be removed (Columns 20, 22, 24) 5. Current Program, Total English and Transcript columns will also be removed (Columns 9,10,17)
 
 ```{r feature_engineering, echo=FALSE}
 raw_uni<-as.data.frame(raw_uni)
@@ -139,8 +134,8 @@ table(uni$Curriculum)
 
 ```
 
-
 # CONVERTING HS SCORES IN ENGLISH, MATH AND PHYSICS TO 4.0 SCALE
+
 ```{r HS score conversion}
 t<-c("A", "B","A1","B1")
 
@@ -160,7 +155,8 @@ uni <- uni %>%
 str(uni)
 ```
 
-#CONVERTING PLACEMENT SCORES TO 4.0 SCALE 
+#CONVERTING PLACEMENT SCORES TO 4.0 SCALE
+
 ```{r Placement score conversion }
 
 uni<-uni%>%
@@ -178,6 +174,7 @@ str(uni)
 ```
 
 # UNDERGRADUATE GPA SCORE ENGNEERING
+
 ```{r RITgpa engineering}
 
 colnames(uni)[3]<-"2014.GPA"
@@ -192,8 +189,6 @@ uni<-uni%>%
 str(uni)
 uni
 ```
-
-
 
 ```{r populating missing values}
 #The missing values can be populated using mean
@@ -254,7 +249,6 @@ FirstThird
  # filter()
 ```
 
-
 ```{r COLLEGE readiness}
 ##CALCULATIONS
 
@@ -287,7 +281,6 @@ mean(uni$PPE, na.rm = TRUE)
 #Percentage less than average 
 
 ```
-
 
 ```{r GPA evolution}
 
@@ -415,12 +408,8 @@ theme(axis.text.x = element_text(angle=65, vjust=0.6)) +
 
 ```
 
+#SCORING SURVEY RESULTS OF GRIT & SELF-CONTROL
 
-
-
-
-
-#SCORING SURVEY RESULTS OF GRIT & SELF-CONTROL 
 ```{r non-cognitive skill Numerisation}
 
  uni$Grit_1<- ifelse(uni$Grit_1 == "Very much like me", 5, ifelse(uni$Grit_1 == "Mostly like me",4, ifelse(uni$Grit_1 == "Somewhat like me",3,ifelse(uni$Grit_1 == "Not much like me" ,2,ifelse(uni$Grit_1 == "Not like me at all",1,0)))))
@@ -448,7 +437,6 @@ uni$SelfControl_8<- ifelse(uni$SelfControl_8 == "Very much like me", 1, ifelse(u
 uni$SelfControl_9<- ifelse(uni$SelfControl_9 == "Very much like me", 1, ifelse(uni$SelfControl_9 == "Mostly like me",2, ifelse(uni$SelfControl_9 == "Somewhat like me",3,ifelse(uni$SelfControl_9 == "Not much like me",4,ifelse(uni$SelfControl_9 == "Not like me at all",5,0)))))
 uni$SelfControl_10<- ifelse(uni$SelfControl_10 == "Very much like me", 1, ifelse(uni$SelfControl_10 == "Mostly like me",2, ifelse(uni$SelfControl_10 == "Somewhat like me",3,ifelse(uni$SelfControl_10 == "Not much like me",4,ifelse(uni$SelfControl_10 == "Not like me at all",5,0)))))
 ```
-
 
 ```{r unibe correlations}
 #(((Math.Placement.Exam.Score/30)*100)/20)-1,PPE=(((Physics.Placement.Score/30)*100)/20)-1,
@@ -525,8 +513,6 @@ summary(uniFirst_lm)
   
 str(unibe)
 ```
-
-
 
 ```{r gritscale & self control impact }
 #unibe$GritScale<-as.factor(unibe$GritScale)
@@ -620,9 +606,6 @@ unibe_lm<-lm(cgpa~GritScale+SelfControlScale + MPE + EPE +MathGrade+ PPE+ Englis
         
 ```
 
-
-
-
 ```{r bucketing cgpa}
 uni<-uni%>%
   mutate(GPA = ifelse(cgpa>3.7, 4,ifelse(cgpa>3.5, 3.5,ifelse(cgpa>3,3,ifelse(cgpa>2.5,2.5, ifelse(cgpa>2,2,1))))))
@@ -649,4 +632,3 @@ library(pastecs)
 #stat.desc(uni[,c()])
 stat.desc(uni)
 ```
-
